@@ -1,15 +1,20 @@
-import { connect } from 'mqtt'
-import { db } from './config/db'
-import { TOPIC_NAME_LIST as topicNameList } from './config/constant'
-import { generateMessage } from './generator/generateMessage'
+import mqttClient from './mqttClient'
+import { enqueueMessage } from './messageQueue'
+import './scheduler' // Importation du scheduler pour démarrer la tâche planifiée
+import { consumeMessages } from './consumer' // Importation des consommateurs
 
-const client = connect('mqtt://test.mosquitto.org')
+// Exemple de publication sur deux topics différents
+mqttClient.subscribe('topic/1')
+mqttClient.subscribe('topic/2')
 
-client.on('connect', () => topicNameList.forEach(topicName => client.subscribe(topicName)))
+mqttClient.on('message', async (topic, message) => {
+  console.log(`Received message on ${topic}: ${message.toString()}`)
+  await enqueueMessage(topic, message.toString())
+})
 
-client.on(
-  'message',
-  async (topic, message) => await db.message.insertOne({ topic: topic, message: message.toString() })
-)
+// Démarrer les consommateurs
+consumeMessages('topic/1', 1) // Un consommateur pour le topic/1
+consumeMessages('topic/2', 2) // Premier consommateur pour le topic/2
+consumeMessages('topic/2', 3) // Deuxième consommateur pour le topic/2
 
-setInterval(generateMessage(client), 1000)
+console.log('Consumers started and listening for messages.')
