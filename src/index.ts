@@ -1,7 +1,7 @@
 import mqttClient from './mqttClient'
 import { enqueueMessage } from './messageQueue'
-import './scheduler' // Importation du scheduler pour démarrer la tâche planifiée
-import { consumeMessages } from './consumer' // Importation des consommateurs
+import './scheduler'
+import { consumeMessages } from './consumer'
 
 // Exemple de publication sur deux topics différents
 mqttClient.subscribe('topic/1')

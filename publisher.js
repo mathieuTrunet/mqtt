@@ -1,5 +1,5 @@
-const mqtt = require('mqtt')
-const client = mqtt.connect('mqtt://test.mosquitto.org')
+import { connect } from 'mqtt'
+const client = connect('mqtt://test.mosquitto.org')
 
 client.on('connect', function () {
   setInterval(() => {
